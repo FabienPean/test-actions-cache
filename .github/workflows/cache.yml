@@ -1,0 +1,62 @@
+name: Test cache
+
+on: 
+  push:
+    branches:
+      - '**'
+
+  workflow_dispatch:
+
+jobs:
+  Cache:
+    runs-on: windows-latest
+    env:
+      INTEL_WINDOWS_MKL_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/19040/w_onemkl_p_2022.2.1.19754_offline.exe
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Restore cache for Intel oneAPI MKL
+      id: cache-intel
+      uses: actions/cache@v3
+      with:
+        path: |
+          C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
+          C:\Program Files (x86)\Intel\oneAPI\setvars.bat
+          C:\Program Files (x86)\Intel\oneAPI\mkl
+        key: ${{ runner.os }}-OneAPI-MKL-2022.2.1
+    - name: Install Intel oneAPI MKL
+      timeout-minutes: 30
+      if: steps.cache-intel.outputs.cache-hit != 'true'
+      run: scripts/install_windows.bat $env:INTEL_WINDOWS_MKL_URL
+    - name: Print MKL folder
+      shell: cmd
+      run: |
+        dir "C:\Program Files (x86)\Intel\oneAPI\mkl"
+        dir "C:\Program Files (x86)\Intel\oneAPI\mkl\latest"
+        
+  Restore:
+    runs-on: windows-latest
+    needs: Cache
+    env:
+      INTEL_WINDOWS_MKL_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/19040/w_onemkl_p_2022.2.1.19754_offline.exe
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Restore cache for Intel oneAPI MKL
+      id: cache-intel
+      uses: actions/cache@v3
+      with:
+        path: |
+          C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
+          C:\Program Files (x86)\Intel\oneAPI\setvars.bat
+          C:\Program Files (x86)\Intel\oneAPI\mkl
+        key: ${{ runner.os }}-OneAPI-MKL-2022.2.1
+    - name: Install Intel oneAPI MKL
+      timeout-minutes: 30
+      if: steps.cache-intel.outputs.cache-hit != 'true'
+      run: scripts/install_windows.bat $env:INTEL_WINDOWS_MKL_URL
+    - name: Print MKL folder
+      shell: cmd
+      run: |
+        dir "C:\Program Files (x86)\Intel\oneAPI\mkl"
+        dir "C:\Program Files (x86)\Intel\oneAPI\mkl\latest"
