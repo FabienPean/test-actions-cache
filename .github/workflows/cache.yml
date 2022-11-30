@@ -93,7 +93,7 @@ jobs:
         
   RestoreFix:
     runs-on: windows-latest
-    needs: Cache
+    needs: CacheFix
     env:
       INTEL_WINDOWS_MKL_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/19040/w_onemkl_p_2022.2.1.19754_offline.exe
     steps:
